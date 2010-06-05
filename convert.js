@@ -4,7 +4,7 @@ var fs = require('fs');
 
 // read behave directory and grab all behaviors
 var cssFiles = paths('./examples/css/');
-sys.puts(JSON.stringify(cssFiles));
+//sys.puts(JSON.stringify(cssFiles));
 var code = '';
 
 for(var file in cssFiles){
@@ -22,7 +22,7 @@ for(var file in cssFiles){
 
 //sys.puts(code);
 
-less.render(code, function (e, css) {
+less.render(".main h1 {height:20px;width:20px;}", function (e, css, json_stylesheet) {
     sys.puts(css); // .class { width: 20px }
 });
 

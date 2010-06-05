@@ -75,6 +75,7 @@ tree.Ruleset.prototype = {
     //
     toCSS: function (context, env) {
         var css = [],      // The CSS output
+            json_stylesheets = [], // json-stylesheets output
             rules = [],    // node.Rule instances
             rulesets = [], // node.Ruleset instances
             paths = [],    // Current selectors
@@ -140,8 +141,13 @@ tree.Ruleset.prototype = {
         // If this is the root node, we don't render
         // a selector, or {}.
         // Otherwise, only output if this ruleset has rules.
+        var sys = require('sys');
+        //sys.puts(JSON.stringify(rules));
+        
         if (this.root) {
             css.push(rules.join('\n'));
+            //json_stylesheets.push(rules.join('\n'));
+            //sys.puts(rules);
         } else {
             if (rules.length > 0) {
                 selector = paths.map(function (p) {
@@ -149,15 +155,18 @@ tree.Ruleset.prototype = {
                         return s.toCSS();
                     }).join('').trim();
                 }).join(paths.length > 3 ? ',\n' : ', ');
+                
+                json_stylesheets.push(selector, '"' + rules.join('\n  ') + "\n}\n");
                 css.push(selector, " {\n  " + rules.join('\n  ') + "\n}\n");
             }
         }
         css.push(rulesets);
-
+        json_stylesheets.push(rulesets);
         // Pop the stack
         env.frames.shift();
-
+        sys.puts(JSON.stringify(json_stylesheets));
         return css.join('');
     }
+  
 };
 
