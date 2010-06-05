@@ -1,0 +1,18 @@
+#functions {
+  color: #660000;
+  width: 16;
+  height: undefined("self");
+  border-width: 5;
+  variable: 11;
+}
+#built-in {
+  escaped: -Some::weird(#thing, y);
+  lighten: #ff8080;
+  darken: #800000;
+  saturate: #203c31;
+  desaturate: #29332f;
+  greyscale: #2e2e2e;
+  format: "rgb(32, 128, 64)";
+  format-string: "hello world";
+  eformat: rgb(32, 128, 64);
+}

@@ -1,0 +1,66 @@
+#!/usr/bin/env node
+
+var path = require('path'),
+    fs = require('fs'),
+    sys = require('sys');
+
+require.paths.unshift(path.join(__dirname, '..', 'lib'));
+
+var less = require('less');
+var args = process.argv.slice(1);
+
+args = args.filter(function (arg) {
+    var match;
+
+    if (match = arg.match(/^--?([a-z][a-z-]*)$/i)) { arg = match[1] }
+    else { return arg }
+
+    switch (arg) {
+        case 'v':
+        case 'version':
+            sys.puts("lessc " + less.version.join('.') + " (LESS Compiler) [JavaScript]");
+            process.exit(0);
+        case 'h':
+        case 'help':
+            sys.puts("usage: lessc source [destination]");
+            process.exit(0);
+    }
+});
+
+var input = args[1] && path.join(process.cwd(), args[1]),
+    output = args[2] && path.join(process.cwd(), args[2]);
+
+var css, fd, tree;
+
+if (! input) {
+    sys.puts("lessc: no input files");
+    process.exit(1);
+}
+
+fs.stat(input, function (e, stats) {
+    if (e) {
+        sys.puts("lessc: " + e.message);
+        process.exit(1);
+    }
+    fs.open(input, process.O_RDONLY, stats.mode, function (e, fd) {
+        fs.read(fd, stats.size, 0, "utf8", function (e, data) {
+            new(less.Parser)({
+                paths: [path.dirname(input)],
+                filename: input
+            }).parse(data, function (err, tree) {
+                if (err) {
+                    less.writeError(err);
+                } else {
+                    css = tree.toCSS();
+                    if (output) {
+                        fd = fs.openSync(output, "w");
+                        fs.writeSync(fd, css, 0, "utf8");
+                    } else {
+                        sys.print(css);
+                    }
+                }
+            });
+        });
+    });
+});
+
